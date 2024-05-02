@@ -1,9 +1,9 @@
 ---
-name: Refactor
+name: "\U0001F527 Refactor"
 about: Refactor
-title: "[Refactor]"
+title: 'Refactor: '
 labels: refactor
-assignees: tmddus2, AhnJoonSung
+assignees: AhnJoonSung, tmddus2
 
 ---
 
