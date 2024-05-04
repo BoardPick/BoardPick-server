@@ -1,0 +1,43 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  IMAGE_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/boardpick-server:latest
+  CONTAINER: boardpick-server
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build . --platform linux/amd64 --file Dockerfile --tag ${{ env.IMAGE_TAG }}
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Push the Docker image
+        run: docker push ${{ env.IMAGE_TAG }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull and re-run
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            docker stop ${{ env.CONTAINER }} || true
+            docker rm ${{ env.CONTAINER }} || true
+            docker pull ${{ env.IMAGE_TAG }}
+            docker run -p 80:8080 -d --name ${{ env.CONTAINER }} ${{ env.IMAGE_TAG }}
