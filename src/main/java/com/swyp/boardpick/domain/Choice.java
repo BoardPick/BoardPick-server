@@ -11,4 +11,6 @@ public class Choice {
     private Long id;
     private String content;
     private Emotion emotion;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "choice")
+    List<ReviewChoice> reviewChoices = new ArrayList<>();
 }

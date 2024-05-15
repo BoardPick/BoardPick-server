@@ -12,4 +12,9 @@ public class BoardGame {
     private String title;
     private String rule;
     private int likes;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "boardGame")
+    List<BoardGameCategory> boardGameCategories = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "boardGame")
+    List<UserBoardGame> userBoardGames = new ArrayList<>();
 }

@@ -9,7 +9,6 @@ import java.util.List;
 @Entity
 public class Review {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@Column(name = "review_id")
     private Long id;
     private String title;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,4 +21,6 @@ public class Review {
     private int stars;
     private int recommendations;
     private LocalDate date;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review")
+    List<ReviewChoice> reviewChoices = new ArrayList<>();
 }

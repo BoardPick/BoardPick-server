@@ -8,7 +8,7 @@ public class BoardGameCategory {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "boardgame_id")
+    @JoinColumn(name = "board_game_id")
     private BoardGame boardGame;
 
     @ManyToOne(fetch = FetchType.LAZY)

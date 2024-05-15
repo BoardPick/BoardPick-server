@@ -12,6 +12,6 @@ public class UserBoardGame {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "boardgame_id")
-    private BoardGame boardgame;
+    @JoinColumn(name = "board_game_id")
+    private BoardGame boardGame;
 }
