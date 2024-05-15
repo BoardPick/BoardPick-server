@@ -1,8 +1,6 @@
 package com.swyp.boardpick.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +12,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity(name="user")
 @Table(name="user")
-public class UserEntity {
+public class User {
     @Id
-    private String userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String code;
     private String nickname;
     private String role;
     private String type;
 
-    public UserEntity (String userId, String type) {
-        this.userId = userId;
+    public User(String code, String type) {
+        this.code = code;
         this.type = type;
         this.role = "ROLE_USER";
     }

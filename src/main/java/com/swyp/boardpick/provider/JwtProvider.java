@@ -18,7 +18,7 @@ public class JwtProvider {
     @Value("${secret-key}")
     private String secretKey;
 
-    public String create(String userId) {
+    public String create(String code) {
 
         // jwt 만료 기간 30분
         Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
@@ -26,7 +26,7 @@ public class JwtProvider {
 
         String jwt = Jwts.builder()
                 .signWith(key, SignatureAlgorithm.HS256)
-                .setSubject(userId).
+                .setSubject(code).
                 setIssuedAt(new Date()).
                 setExpiration(expiredDate)
                 .compact();

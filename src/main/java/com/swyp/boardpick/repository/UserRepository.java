@@ -1,12 +1,12 @@
 package com.swyp.boardpick.repository;
 
-import com.swyp.boardpick.entity.UserEntity;
+import com.swyp.boardpick.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    UserEntity findByUserId(String userId);
+    User findByCode(String code);
 
 }
