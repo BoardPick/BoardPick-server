@@ -3,6 +3,8 @@ package com.swyp.boardpick.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Review {
@@ -19,4 +21,6 @@ public class Review {
     private int stars;
     private int recommendations;
     private LocalDate date;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review")
+    List<ReviewChoice> reviewChoices = new ArrayList<>();
 }

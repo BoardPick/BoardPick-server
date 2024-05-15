@@ -2,6 +2,8 @@ package com.swyp.boardpick.domain;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -11,4 +13,6 @@ public class User {
     private String email;
     private String nickname;
     private Role role;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    List<UserBoardGame> userBoardGames = new ArrayList<>();
 }
