@@ -1,8 +1,7 @@
 package com.swyp.boardpick.service.implement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swyp.boardpick.entity.CustomOAuth2User;
-import com.swyp.boardpick.entity.UserEntity;
+import com.swyp.boardpick.entity.User;
 import com.swyp.boardpick.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,14 +33,14 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
 //            exception.printStackTrace();
 //        }
 
-        UserEntity userEntity = null;
+        User user = null;
         String userId = null;
 
         if (oauthClientName.equals("kakao")) {
             userId = "kakao_" + oAuth2User.getAttributes().get("id");
-            if (userRepository.findByUserId(userId) != null) {
-                userEntity = new UserEntity(userId, "kakao");
-                userRepository.save(userEntity);
+            if (userRepository.findByCode(userId) != null) {
+                user = new User(userId, "kakao");
+                userRepository.save(user);
             }
         }
 

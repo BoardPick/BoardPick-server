@@ -1,6 +1,6 @@
 package com.swyp.boardpick.filter;
 
-import com.swyp.boardpick.entity.UserEntity;
+import com.swyp.boardpick.entity.User;
 import com.swyp.boardpick.provider.JwtProvider;
 import com.swyp.boardpick.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -41,21 +41,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            String userId = jwtProvider.validate(token);
-            if (userId == null) {
+            String code = jwtProvider.validate(token);
+            if (code == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            UserEntity userEntity = userRepository.findByUserId(userId);
-            String role = userEntity.getRole(); // role : ROLE_USER, ROLE_ADMIN
+            User user = userRepository.findByCode(code);
+            String role = user.getRole(); // role : ROLE_USER, ROLE_ADMIN
 
             List<GrantedAuthority> authorities = new ArrayList<>(); // role이 여러개일수도 있으므로
             authorities.add(new SimpleGrantedAuthority(role));
 
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             AbstractAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                    new UsernamePasswordAuthenticationToken(code, null, authorities);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             securityContext.setAuthentication(authenticationToken);
