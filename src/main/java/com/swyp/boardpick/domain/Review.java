@@ -3,13 +3,10 @@ package com.swyp.boardpick.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Review {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@Column(name = "review_id")
     private Long id;
     private String title;
     @ManyToOne(fetch = FetchType.LAZY)
