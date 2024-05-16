@@ -33,9 +33,10 @@ public class BoardGameController {
         return ResponseEntity.ok(recommendedBoardGames);
     }
 
-    @GetMapping()
-    public ResponseEntity<List<BoardGameDto>> getBoardgamesByCategory(
+    @GetMapping
+    @ResponseBody
+    public List<BoardGameDto> getBoardgamesByCategory(
             @RequestParam String category, @RequestParam int page, @RequestParam int size) {
-            return ResponseEntity.ok(boardGameService.getBoardGamesByCategory(category, page, size));
+        return boardGameService.getBoardGamesByCategory(category, page, size);
     }
 }

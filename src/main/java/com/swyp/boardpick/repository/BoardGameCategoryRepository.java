@@ -5,9 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface BoardGameCategoryRepository extends JpaRepository<BoardGameCategory, Long> {
-    Optional<BoardGameCategory> findByCategory(String category, Pageable pageable);
+    List<BoardGameCategory> findByCategory_Id(Long categoryId, Pageable pageable);
 }
