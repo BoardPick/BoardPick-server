@@ -1,7 +1,8 @@
 package com.swyp.boardpick.service.implement;
 
-import com.swyp.boardpick.entity.CustomOAuth2User;
-import com.swyp.boardpick.entity.User;
+import com.swyp.boardpick.domain.CustomOAuth2User;
+import com.swyp.boardpick.domain.Role;
+import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,25 +28,23 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(request);
         String oauthClientName = request.getClientRegistration().getClientName();
 
-//        try {
-//            System.out.println(new ObjectMapper().writeValueAsString(oAuth2User.getAttributes()));
-//        } catch (Exception exception) {
-//            exception.printStackTrace();
-//        }
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(Role.USER.getDescription()));
 
         User user = null;
-        String userId = null;
+        String userCode = null;
 
         if (oauthClientName.equals("kakao")) {
-            userId = "kakao_" + oAuth2User.getAttributes().get("id");
-            if (userRepository.findByCode(userId) != null) {
-                user = new User(userId, "kakao");
-                userRepository.save(user);
-            }
+
+            userCode = "kakao_" + oAuth2User.getAttributes().get("id");
+
+            if (userRepository.findByCode(userCode).isPresent())
+                return new CustomOAuth2User(userCode, authorities);
+
+            user = new User(userCode);
+            userRepository.save(user);
         }
 
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return new CustomOAuth2User(userId, authorities);
+        return new CustomOAuth2User(userCode, authorities);
     }
 }

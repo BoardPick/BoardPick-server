@@ -1,6 +1,13 @@
 package com.swyp.boardpick.domain;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum Role {
-    USER,
-    MANAGER
+    USER("ROLE_USER"),
+    ADMIN("ROLE_ADMIN");
+
+    private final String description;
 }

@@ -1,13 +1,12 @@
 package com.swyp.boardpick.handler;
 
-import com.swyp.boardpick.entity.CustomOAuth2User;
+import com.swyp.boardpick.domain.CustomOAuth2User;
 import com.swyp.boardpick.provider.JwtProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 

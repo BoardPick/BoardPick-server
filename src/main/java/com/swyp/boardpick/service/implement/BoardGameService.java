@@ -1,6 +1,6 @@
 package com.swyp.boardpick.service.implement;
 
-import com.swyp.boardpick.entity.BoardGame;
+import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.repository.BoardGameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
