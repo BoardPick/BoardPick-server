@@ -1,8 +1,10 @@
 package com.swyp.boardpick.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 public class BoardGameCategory {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
