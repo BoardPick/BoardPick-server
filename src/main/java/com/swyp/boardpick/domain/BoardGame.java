@@ -12,6 +12,7 @@ public class BoardGame {
     private String thumbnailUrl;
     private String imageUrl;
     private String name;
+    private String description;
     private double rating;
     private int ratingCount;
     private int minPlayers;
