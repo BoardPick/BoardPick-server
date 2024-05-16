@@ -24,6 +24,7 @@ public class User {
     private String code;
     private String nickname;
     private Role role;
+    private String profileImage;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     List<UserBoardGame> userBoardGames = new ArrayList<>();
