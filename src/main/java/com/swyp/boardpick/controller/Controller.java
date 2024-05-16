@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class Controller {
 
     @GetMapping("/")
-    public String login() {
-        return "login";
+    public String index() {
+        return "index";
     }
 
     @GetMapping("/error")
@@ -18,7 +18,7 @@ public class Controller {
 
     @GetMapping("/auth/oauth-response/**")
     public String success() {
-        return "success";
+        return "index";
     }
 
     @GetMapping("/user")
