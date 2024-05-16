@@ -1,6 +1,6 @@
 package com.swyp.boardpick.controller;
 
-import com.swyp.boardpick.entity.BoardGame;
+import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.service.implement.BoardGameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

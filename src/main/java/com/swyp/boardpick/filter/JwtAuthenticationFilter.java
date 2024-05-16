@@ -1,8 +1,9 @@
 package com.swyp.boardpick.filter;
 
-import com.swyp.boardpick.entity.User;
+import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.provider.JwtProvider;
 import com.swyp.boardpick.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,8 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            User user = userRepository.findByCode(code);
-            String role = user.getRole(); // role : ROLE_USER, ROLE_ADMIN
+            User user = userRepository.findByCode(code)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with code: " + code));
+            String role = user.getRole().getDescription(); // role : ROLE_USER, ROLE_ADMIN
 
             List<GrantedAuthority> authorities = new ArrayList<>(); // role이 여러개일수도 있으므로
             authorities.add(new SimpleGrantedAuthority(role));
