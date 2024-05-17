@@ -39,4 +39,9 @@ public class BoardGameController {
             @RequestParam String category, @RequestParam int page, @RequestParam int size) {
         return boardGameService.getBoardGamesByCategory(category, page, size);
     }
+
+    @GetMapping("/today-pick")
+    public List<BoardGameDto> getTodayPick() {
+        return boardGameService.getTodayPick();
+    }
 }
