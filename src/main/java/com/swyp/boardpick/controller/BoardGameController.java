@@ -45,4 +45,9 @@ public class BoardGameController {
             @RequestParam String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
         return boardGameService.searchBoardGames(keyword, page, size);
     }
+
+    @GetMapping("/today-pick")
+    public List<BoardGameDto> getTodayPick() {
+        return boardGameService.getTodayPick();
+    }
 }

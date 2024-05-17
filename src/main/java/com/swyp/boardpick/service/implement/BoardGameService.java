@@ -51,4 +51,24 @@ public class BoardGameService {
                     return new BoardGameDto(boardGame, tags, picked);
                 }).toList();
     }
+
+    public List<BoardGameDto> getBoardGamesByNumOfPick(int page, int size) {
+        return boardGameRepository.findByPickCountDesc(PageRequest.of(page, size))
+                .map(boardGame -> {
+                    List<String> tags = boardGame.getBoardGameTags()
+                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                            .toList();
+                    return new BoardGameDto(boardGame, tags);
+                }).toList();
+    }
+
+    public List<BoardGameDto> getTodayPick() {
+        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0,10))
+                .map(boardGame -> {
+                    List<String> tags = boardGame.getBoardGameTags()
+                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                            .toList();
+                    return new BoardGameDto(boardGame, tags);
+                }).toList();
+    }
 }
