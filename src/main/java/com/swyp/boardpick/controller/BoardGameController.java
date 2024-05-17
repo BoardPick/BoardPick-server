@@ -36,8 +36,14 @@ public class BoardGameController {
     @GetMapping
     @ResponseBody
     public List<BoardGameDto> getBoardgamesByCategory(
-            @RequestParam String category, @RequestParam int page, @RequestParam int size) {
+            @RequestParam String category, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
         return boardGameService.getBoardGamesByCategory(category, page, size);
+    }
+
+    @GetMapping("/search")
+    public List<BoardGameDto> searchBoardGames(
+            @RequestParam String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        return boardGameService.searchBoardGames(keyword, page, size);
     }
 
     @GetMapping("/today-pick")

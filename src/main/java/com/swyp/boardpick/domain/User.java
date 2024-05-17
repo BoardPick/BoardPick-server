@@ -1,5 +1,6 @@
 package com.swyp.boardpick.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class User {
     private Role role;
     private String profileImage;
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     List<UserBoardGame> userBoardGames = new ArrayList<>();
 

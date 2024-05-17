@@ -58,4 +58,5 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
 
         return new CustomOAuth2User(userCode, authorities);
     }
+
 }
