@@ -1,7 +1,9 @@
 package com.swyp.boardpick.service.implement;
 
+import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.dto.response.BoardGameDto;
+import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.BoardGameTagRepository;
 import com.swyp.boardpick.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final BoardGameTagRepository boardGameTagRepository;
 
     public Long getUserId(String userCode) {
         User user = userRepository.findByCode(userCode)
@@ -26,8 +27,10 @@ public class UserService {
         return userRepository.findById(id)
                 .get().getUserBoardGames()
                 .stream().map(userBoardGame -> {
-                    List<String> tags = boardGameTagRepository.findBoardGameTagByBoardGame(userBoardGame.getBoardGame())
-                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent()).toList();
+                    BoardGame boardGame = userBoardGame.getBoardGame();
+                    List<String> tags = boardGame.getBoardGameTags()
+                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                            .toList();
                     return new BoardGameDto(userBoardGame.getBoardGame(), tags);
                 })
                 .toList();
