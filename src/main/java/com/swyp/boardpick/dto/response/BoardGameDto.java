@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @Data
@@ -16,7 +18,8 @@ public class BoardGameDto {
     private String description;
     private double rating;
     private int ratingCount;
-    public BoardGameDto(BoardGame boardGame) {
+    private List<String> tags;
+    public BoardGameDto(BoardGame boardGame, List<String> tags) {
         this.id = boardGame.getId();
         this.thumbnailUrl = boardGame.getThumbnailUrl();
         this.imageUrl = boardGame.getImageUrl();
@@ -24,5 +27,6 @@ public class BoardGameDto {
         this.description = boardGame.getDescription();
         this.rating = boardGame.getRating();
         this.ratingCount = boardGame.getRatingCount();
+        this.tags = tags;
     }
 }
