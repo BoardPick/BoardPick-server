@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -18,4 +20,6 @@ public class UserBoardGame {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_game_id")
     private BoardGame boardGame;
+
+    private Date date;
 }

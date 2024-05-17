@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 public class UserBoardGameService {
@@ -36,6 +38,7 @@ public class UserBoardGameService {
 
             userBoardGame.setUser(user);
             userBoardGame.setBoardGame(boardGame);
+            userBoardGame.setDate(new Date());
 
             userBoardGameRepository.save(userBoardGame);
             return true;
