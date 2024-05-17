@@ -19,7 +19,6 @@ import java.util.Optional;
 public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final BoardGameCategoryRepository boardGameCategoryRepository;
-    private final BoardGameTagRepository boardGameTagRepository;
     private final CategoryRepository categoryRepository;
 
 
@@ -32,9 +31,9 @@ public class BoardGameService {
         return boardGameCategoryRepository.findByCategory_Id(categoryId, PageRequest.of(page, size))
                 .stream().map(boardGameCategory -> {
                     BoardGame boardGame = boardGameCategory.getBoardGame();
-                    List<String> tags = boardGameTagRepository.findBoardGameTagByBoardGame(boardGame)
-                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent()).toList();
-
+                    List<String> tags = boardGame.getBoardGameTags()
+                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                            .toList();
                     return new BoardGameDto(boardGame, tags);
                 }).toList();
     }

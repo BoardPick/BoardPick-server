@@ -29,4 +29,7 @@ public class BoardGame {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "boardGame")
     List<UserBoardGame> userBoardGames = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "boardGame")
+    List<BoardGameTag> boardGameTags = new ArrayList<>();
 }
