@@ -18,6 +18,7 @@ public class BoardGameDto {
     private String description;
     private double rating;
     private int ratingCount;
+    private boolean picked;
     private List<String> tags;
     public BoardGameDto(BoardGame boardGame, List<String> tags) {
         this.id = boardGame.getId();
@@ -28,5 +29,18 @@ public class BoardGameDto {
         this.rating = boardGame.getRating();
         this.ratingCount = boardGame.getRatingCount();
         this.tags = tags;
+        this.picked = true;
+    }
+
+    public BoardGameDto(BoardGame boardGame, List<String> tags, boolean picked) {
+        this.id = boardGame.getId();
+        this.thumbnailUrl = boardGame.getThumbnailUrl();
+        this.imageUrl = boardGame.getImageUrl();
+        this.name = boardGame.getName();
+        this.description = boardGame.getDescription();
+        this.rating = boardGame.getRating();
+        this.ratingCount = boardGame.getRatingCount();
+        this.tags = tags;
+        this.picked = picked;
     }
 }
