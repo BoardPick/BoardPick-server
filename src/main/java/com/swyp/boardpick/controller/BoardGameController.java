@@ -1,14 +1,12 @@
 package com.swyp.boardpick.controller;
 
 import com.swyp.boardpick.domain.BoardGame;
+import com.swyp.boardpick.dto.response.BoardGameDto;
 import com.swyp.boardpick.service.BoardGameRecommendationService;
 import com.swyp.boardpick.service.implement.BoardGameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,5 +31,12 @@ public class BoardGameController {
         if (recommendedBoardGames.isEmpty())
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok(recommendedBoardGames);
+    }
+
+    @GetMapping
+    @ResponseBody
+    public List<BoardGameDto> getBoardgamesByCategory(
+            @RequestParam String category, @RequestParam int page, @RequestParam int size) {
+        return boardGameService.getBoardGamesByCategory(category, page, size);
     }
 }
