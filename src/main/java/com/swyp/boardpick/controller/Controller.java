@@ -11,23 +11,4 @@
 //    public String index() {
 //        return "index";
 //    }
-//
-//    @GetMapping("/error")
-//    public String test() {
-//        return "error";}
-//
-//    @GetMapping("/auth/oauth-response/**")
-//    public String success() {
-//        return "index";
-//    }
-//
-//    @GetMapping("/user")
-//    public String user() {
-//        return "user";
-//    }
-//
-//    @GetMapping("/admin")
-//    public String admin() {
-//        return "admin";
-//    }
 //}

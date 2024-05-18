@@ -34,6 +34,7 @@ public class UserBoardGameService {
         if (userBoardGameRepository.existsByUserIdAndBoardGameId(userId, boardGameId)) {
             userBoardGameRepository.deleteByUserIdAndBoardGameId(userId, boardGameId);
             boardGame.decreaseLikes();
+            boardGameRepository.save(boardGame);
             return false;
         }
         // 좋아요
@@ -48,6 +49,7 @@ public class UserBoardGameService {
 
             userBoardGameRepository.save(userBoardGame);
             boardGame.increaseLikes();
+            boardGameRepository.save(boardGame);
             return true;
         }
     }
