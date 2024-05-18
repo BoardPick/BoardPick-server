@@ -3,6 +3,7 @@ package com.swyp.boardpick.service.implement;
 import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.dto.response.BoardGameDto;
+import com.swyp.boardpick.dto.response.UserDto;
 import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.BoardGameTagRepository;
 import com.swyp.boardpick.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +52,11 @@ public class UserService {
                     return new BoardGameDto(userBoardGame.getBoardGame(), tags);
                 })
                 .toList();
+    }
+
+    public UserDto getMyInfo(Long id) {
+        User user =  userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return new UserDto(user);
     }
 }
