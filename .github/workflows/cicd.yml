@@ -44,4 +44,4 @@ jobs:
             docker stop ${{ env.CONTAINER }} || true
             docker rm ${{ env.CONTAINER }} || true
             docker pull ${{ env.IMAGE_TAG }}
-            docker run -p 80:8080 -d --name ${{ env.CONTAINER }} ${{ env.IMAGE_TAG }}
+            docker run -p 80:8080 -p 443:8080 -d --name ${{ env.CONTAINER }} ${{ env.IMAGE_TAG }}
