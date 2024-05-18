@@ -2,9 +2,13 @@ name: CI/CD
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+      - dev
 
 env:
   IMAGE_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/boardpick-server:latest

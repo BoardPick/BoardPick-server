@@ -31,4 +31,5 @@ application.properties
 .gradle/
 .DS_Store
 .idea
+**/*.html
 
