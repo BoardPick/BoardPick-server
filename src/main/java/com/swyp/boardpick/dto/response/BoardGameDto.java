@@ -1,10 +1,18 @@
 package com.swyp.boardpick.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swyp.boardpick.domain.BoardGame;
+import com.swyp.boardpick.domain.BoardGameCategory;
+import com.swyp.boardpick.domain.BoardGameTag;
+import com.swyp.boardpick.domain.UserBoardGame;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -18,8 +26,18 @@ public class BoardGameDto {
     private String description;
     private double rating;
     private int ratingCount;
+    private int minPlayers;
+    private int maxPlayers;
+    private int playtime;
+    private int ageLimit;
+    private double difficulty;
+    private String rule;
+    private int likes;
     private boolean picked;
+    private List<BoardGameCategory> boardGameCategories;
+    private List<UserBoardGame> userBoardGames;
     private List<String> tags;
+
     public BoardGameDto(BoardGame boardGame, List<String> tags) {
         this.id = boardGame.getId();
         this.thumbnailUrl = boardGame.getThumbnailUrl();
@@ -40,6 +58,15 @@ public class BoardGameDto {
         this.description = boardGame.getDescription();
         this.rating = boardGame.getRating();
         this.ratingCount = boardGame.getRatingCount();
+        this.minPlayers = boardGame.getMinPlayers();
+        this.maxPlayers = boardGame.getMaxPlayers();
+        this.playtime = boardGame.getPlaytime();
+        this.ageLimit = boardGame.getAgeLimit();
+        this.difficulty = boardGame.getDifficulty();
+        this.rule = boardGame.getRule();
+        this.likes = boardGame.getLikes();
+        this.boardGameCategories = boardGame.getBoardGameCategories();
+        this.userBoardGames = boardGame.getUserBoardGames();
         this.tags = tags;
         this.picked = picked;
     }

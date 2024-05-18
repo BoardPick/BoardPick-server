@@ -1,9 +1,8 @@
 package com.swyp.boardpick.controller;
 
-import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.dto.response.BoardGameDto;
-import com.swyp.boardpick.service.BoardGameRecommendationService;
 import com.swyp.boardpick.service.implement.BoardGameService;
+import com.swyp.boardpick.service.implement.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,18 +15,18 @@ import java.util.List;
 public class BoardGameController {
 
     private final BoardGameService boardGameService;
-    private final BoardGameRecommendationService recommendationService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardGame> getBoardGameById(@PathVariable Long id) {
+    public ResponseEntity<BoardGameDto> getBoardGameById(@PathVariable Long id) {
         return boardGameService.getBoardGameById(id)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-    @GetMapping("/recommendations")
-    public ResponseEntity<List<BoardGame>> getRecommendations() {
-        List<BoardGame> recommendedBoardGames = recommendationService.recommendBoardGames();
+    @GetMapping("/recs")
+    public ResponseEntity<List<BoardGameDto>> getRecommendations() {
+        List<BoardGameDto> recommendedBoardGames = boardGameService.recommendBoardGames();
         if (recommendedBoardGames.isEmpty())
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok(recommendedBoardGames);
@@ -36,14 +35,14 @@ public class BoardGameController {
     @GetMapping
     @ResponseBody
     public List<BoardGameDto> getBoardgamesByCategory(
-            @RequestParam String category, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+            @RequestParam String category, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return boardGameService.getBoardGamesByCategory(category, page, size);
     }
 
     @GetMapping("/search")
     public List<BoardGameDto> searchBoardGames(
-            @RequestParam String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
-        return boardGameService.searchBoardGames(keyword, page, size);
+            @RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return boardGameService.searchBoardGamesByKeyword(keyword, page, size);
     }
 
     @GetMapping("/today-pick")
