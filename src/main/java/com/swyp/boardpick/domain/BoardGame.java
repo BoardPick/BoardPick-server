@@ -1,6 +1,7 @@
 package com.swyp.boardpick.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.swyp.boardpick.utils.BoardGameEntityListener;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,9 +9,10 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
 @Setter
+@Entity
+@EntityListeners(BoardGameEntityListener.class) // youtube link embed 형식으로 formatting 해서 저장하기 위해
 public class BoardGame {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
