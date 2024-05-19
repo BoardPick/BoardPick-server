@@ -32,6 +32,7 @@ public class BoardGameDto {
     private int ageLimit;
     private double difficulty;
     private String rule;
+    private String extraVideo;
     private int likes;
     private boolean picked;
     private List<BoardGameCategory> boardGameCategories;
@@ -64,6 +65,7 @@ public class BoardGameDto {
         this.ageLimit = boardGame.getAgeLimit();
         this.difficulty = boardGame.getDifficulty();
         this.rule = boardGame.getRule();
+        this.extraVideo = boardGame.getExtraVideo();
         this.likes = boardGame.getLikes();
         this.boardGameCategories = boardGame.getBoardGameCategories();
         this.userBoardGames = boardGame.getUserBoardGames();
