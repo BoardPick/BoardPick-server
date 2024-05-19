@@ -76,6 +76,12 @@ public class BoardGameService {
     }
 
     private BoardGameDto convertToDto(BoardGame boardGame) {
+        String difficulty = convertDifficulty(boardGame.getDifficulty()).getDescription();
+
+        List<String> boardGameCategories = boardGame.getBoardGameCategories()
+                .stream().map(boardGameCategory -> boardGameCategory.getCategory().getType())
+                .toList();
+
         List<String> tags =
                 boardGame.getBoardGameTags()
                         .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
@@ -87,6 +93,18 @@ public class BoardGameService {
 
         boolean picked = userBoardGameRepository.existsByUserIdAndBoardGameId(userId, boardGameId);
 
-        return new BoardGameDto(boardGame, tags, picked);
+        return new BoardGameDto(boardGame, difficulty, boardGameCategories, tags, picked);
+    }
+
+    private Difficulty convertDifficulty(double difficulty) {
+        if (difficulty < 1.8)
+            return Difficulty.VERY_EASY;
+        if (difficulty < 2.6)
+            return Difficulty.EASY;
+        if (difficulty < 3.4)
+            return Difficulty.NORMAL;
+        if (difficulty < 4.2)
+            return Difficulty.HARD;
+        return Difficulty.VERY_HARD;
     }
 }
