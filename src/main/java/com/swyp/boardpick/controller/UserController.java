@@ -24,8 +24,9 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserDto> getMyInfo(@AuthenticationPrincipal CustomOAuth2User principal) {
         if (principal == null) {
-            URI uri = URI.create(Uri.HTTP_FOUND.getDescription());
-            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+//            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
+//            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Long userId = userService.getUserId(principal.getName());

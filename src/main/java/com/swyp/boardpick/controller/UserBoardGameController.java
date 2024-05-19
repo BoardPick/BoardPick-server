@@ -32,8 +32,9 @@ public class UserBoardGameController {
     public ResponseEntity<?> togglePick(@PathVariable Long boardGameId, @AuthenticationPrincipal CustomOAuth2User principal) {
 
         if (principal == null) {
-            URI uri = URI.create(Uri.HTTP_FOUND.getDescription());
-            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+//            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
+//            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String userCode = principal.getName();
         User user = userRepository.findByCode(userCode)
@@ -49,8 +50,9 @@ public class UserBoardGameController {
     @ResponseBody
     public ResponseEntity<List<BoardGameDto>> getMyPickList(@AuthenticationPrincipal CustomOAuth2User principal) {
         if (principal == null) {
-            URI uri = URI.create(Uri.HTTP_FOUND.getDescription());
-            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+//            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
+//            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Long id = userService.getUserId(principal.getName());
