@@ -26,6 +26,7 @@ public class BoardGame {
     private int ageLimit;
     private double difficulty;
     private String rule;
+    private String extraVideo;
     private int likes;
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "boardGame")
