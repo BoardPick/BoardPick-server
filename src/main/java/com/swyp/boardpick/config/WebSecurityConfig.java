@@ -1,5 +1,6 @@
 package com.swyp.boardpick.config;
 
+import com.swyp.boardpick.domain.Uri;
 import com.swyp.boardpick.filter.JwtAuthenticationFilter;
 import com.swyp.boardpick.handler.OAuth2SuccessHandler;
 import com.swyp.boardpick.service.implement.OAuth2UserServiceImplement;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,6 +38,7 @@ public class WebSecurityConfig {
     private final OAuth2UserServiceImplement oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
 
@@ -62,7 +65,13 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(new FailedAuthenticationEntryPoint())
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl(Uri.MAIN_PAGE.getDescription())
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
+                );
 
         return httpSecurity.build();
     }
