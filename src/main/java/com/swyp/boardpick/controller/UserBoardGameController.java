@@ -29,7 +29,7 @@ public class UserBoardGameController {
     private final UserRepository userRepository;
 
     @PostMapping("/{boardGameId}")
-    public ResponseEntity<?> togglePick(@PathVariable Long boardGameId, @AuthenticationPrincipal CustomOAuth2User principal) {
+    public ResponseEntity<?> togglePick(@PathVariable("boardGameId") Long boardGameId, @AuthenticationPrincipal CustomOAuth2User principal) {
 
         if (principal == null) {
 //            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
