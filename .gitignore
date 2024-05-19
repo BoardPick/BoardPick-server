@@ -27,5 +27,9 @@ replay_pid*
 application.properties
 
 #etc
+*tmp/
+.gradle/
 .DS_Store
 .idea
+**/*.html
+
