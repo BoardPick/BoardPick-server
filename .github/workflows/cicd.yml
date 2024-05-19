@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - main
-      - dev
 
 env:
   IMAGE_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/boardpick-server:latest
