@@ -34,6 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtProvider.create(code);
 
 //        response.sendRedirect(frontBaseUrl + "/auth/oauth-response/" + token + "/3600");
-        response.sendRedirect(frontBaseUrl);
+//        response.sendRedirect(frontBaseUrl);
+        response.sendRedirect("http://localhost:3000");
     }
 }
