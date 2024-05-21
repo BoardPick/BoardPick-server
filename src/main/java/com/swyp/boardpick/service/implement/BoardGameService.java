@@ -107,4 +107,31 @@ public class BoardGameService {
             return Difficulty.HARD;
         return Difficulty.VERY_HARD;
     }
+
+    public List<BoardGameDto> getTop10(String filter) {
+        if (filter.equals("difficulty")) {
+            return boardGameRepository.findByPickDifficultyDesc(PageRequest.of(0,10))
+                    .map(boardGame -> {
+                        List<String> tags = boardGame.getBoardGameTags()
+                                .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                                .toList();
+                        return new BoardGameDto(boardGame, tags);
+                    }).toList();
+        } else if (filter.equals("players")) {
+            return boardGameRepository.findByPickPlayersDesc(PageRequest.of(0,10))
+                    .map(boardGame -> {
+                        List<String> tags = boardGame.getBoardGameTags()
+                                .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                                .toList();
+                        return new BoardGameDto(boardGame, tags);
+                    }).toList();
+        }
+        return boardGameRepository.findByPick2PlayersDesc(PageRequest.of(0,10))
+                .map(boardGame -> {
+                    List<String> tags = boardGame.getBoardGameTags()
+                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
+                            .toList();
+                    return new BoardGameDto(boardGame, tags);
+                }).toList();
+    }
 }
