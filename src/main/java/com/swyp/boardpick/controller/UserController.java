@@ -7,6 +7,7 @@ import com.swyp.boardpick.service.implement.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<UserDto> getMyInfo(@AuthenticationPrincipal CustomOAuth2User principal) {
+    public ResponseEntity<UserDto> getMyInfo(Authentication principal) {
         if (principal == null) {
 //            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
 //            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();

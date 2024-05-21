@@ -20,8 +20,8 @@ public class JwtProvider {
 
     public String create(String code) {
 
-        // jwt 만료 기간 30분
-        Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        // jwt 만료 기간 5시간
+        Date expiredDate = Date.from(Instant.now().plus(5, ChronoUnit.HOURS));
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         String jwt = Jwts.builder()
