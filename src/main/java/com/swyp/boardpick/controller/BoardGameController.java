@@ -49,4 +49,9 @@ public class BoardGameController {
     public List<BoardGameDto> getTodayPick() {
         return boardGameService.getTodayPick();
     }
+
+    @GetMapping("/list")
+    public List<BoardGameDto> getTop10(@RequestParam String filter) {
+        return boardGameService.getTop10(filter);
+    }
 }
