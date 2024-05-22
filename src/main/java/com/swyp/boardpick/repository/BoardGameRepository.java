@@ -27,6 +27,6 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("SELECT bg FROM BoardGame bg WHERE bg.maxPlayers=2 AND bg.minPlayers=2")
     Page<BoardGame> findByPick2PlayersDesc(Pageable pageable);
 
-    @Query("SELECT bg FROM BoardGame bg ORDER BY COUNT(bg.maxPlayers) DESC")
+    @Query("SELECT bg FROM BoardGame bg ORDER BY bg.maxPlayers DESC")
     Page<BoardGame> findByPickPlayersDesc(Pageable pageable);
 }
