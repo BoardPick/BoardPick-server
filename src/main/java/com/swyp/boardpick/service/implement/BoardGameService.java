@@ -3,13 +3,12 @@ package com.swyp.boardpick.service.implement;
 import com.swyp.boardpick.domain.*;
 import com.swyp.boardpick.dto.response.BoardGameDto;
 import com.swyp.boardpick.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -69,13 +68,38 @@ public class BoardGameService {
     }
 
     public List<BoardGameDto> getTodayPick() {
-        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0,10))
+        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0, 10))
                 .map(boardGame -> {
                     List<String> tags = boardGame.getBoardGameTags()
                             .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
                             .toList();
                     return new BoardGameDto(boardGame, tags);
                 }).toList();
+    }
+
+    public List<BoardGameDto> getTop10(String filter) {
+        Page<BoardGame> boardGames = boardGameRepository.findByPick2PlayersDesc(PageRequest.of(0, 10));
+        if (filter.equals("difficulty")) {
+            boardGames = boardGameRepository.findByPickDifficultyDesc(PageRequest.of(0, 10));
+        } else if (filter.equals("players")) {
+            boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0, 10));
+        }
+        return boardGames.map(boardGame -> convertToDto(boardGame)).stream().toList();
+    }
+
+    public List<BoardGameDto> getSimilarBoardGamesById(Long id) {
+        BoardGame boardGame = boardGameRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("BoardGame not found"));
+
+        List<Category> categories = boardGame.getBoardGameCategories()
+                .stream()
+                .map(BoardGameCategory::getCategory)
+                .collect(Collectors.toList());
+
+        return boardGameRepository.findSimilarByCategories(categories, id)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     private BoardGameDto convertToDto(BoardGame boardGame) {
@@ -109,15 +133,5 @@ public class BoardGameService {
         if (difficulty < 4.2)
             return Difficulty.HARD;
         return Difficulty.VERY_HARD;
-    }
-
-    public List<BoardGameDto> getTop10(String filter) {
-        Page<BoardGame> boardGames = boardGameRepository.findByPick2PlayersDesc(PageRequest.of(0,10));
-        if (filter.equals("difficulty")) {
-            boardGames = boardGameRepository.findByPickDifficultyDesc(PageRequest.of(0,10));
-        } else if (filter.equals("players")) {
-            boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0,10));
-        }
-        return boardGames.map(boardGame -> convertToDto(boardGame)).stream().toList();
     }
 }

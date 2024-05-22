@@ -54,4 +54,9 @@ public class BoardGameController {
     public List<BoardGameDto> getTop10(@RequestParam String filter) {
         return boardGameService.getTop10(filter);
     }
+
+    @GetMapping("similar/{id}")
+    public List<BoardGameDto> similarBoardGames(@PathVariable Long id) {
+        return boardGameService.getSimilarBoardGamesById(id);
+    }
 }
