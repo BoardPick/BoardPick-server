@@ -16,7 +16,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     Page<BoardGame> findByPickCountDesc(Pageable pageable);
 
     @Query("SELECT bg FROM BoardGame bg LEFT JOIN bg.userBoardGames ubg " +
-            "WHERE ubg.date = CURRENT_DATE " +
+            "WHERE DATE(ubg.date) = CURRENT_DATE " +
             "GROUP BY bg " +
             "ORDER BY COUNT(ubg) DESC")
     Page<BoardGame> findByPickCountDescForToday(Pageable pageable);
