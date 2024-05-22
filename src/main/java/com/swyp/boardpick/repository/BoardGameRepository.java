@@ -35,7 +35,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("SELECT bg FROM BoardGame bg ORDER BY bg.maxPlayers DESC")
     Page<BoardGame> findByPickPlayersDesc(Pageable pageable);
 
-    @Query("SELECT bg FROM BoardGame bg JOIN bg.boardGameCategories bgc JOIN bgc.category c WHERE c IN :categories GROUP BY bg ORDER BY COUNT(c) DESC")
-    List<BoardGame> findSimilarByCategories(@Param("categories") List<Category> categories);
+    @Query("SELECT bg FROM BoardGame bg JOIN bg.boardGameCategories bgc JOIN bgc.category c WHERE c IN :categories AND bg.id <> :boardGameId GROUP BY bg ORDER BY COUNT(c) DESC")
+    List<BoardGame> findSimilarByCategories(@Param("categories") List<Category> categories, @Param("boardGameId") Long boardGameId);
 
 }

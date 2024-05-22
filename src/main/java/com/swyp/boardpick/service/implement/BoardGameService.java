@@ -96,7 +96,7 @@ public class BoardGameService {
                 .map(BoardGameCategory::getCategory)
                 .collect(Collectors.toList());
 
-        return boardGameRepository.findSimilarByCategories(categories)
+        return boardGameRepository.findSimilarByCategories(categories, id)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
