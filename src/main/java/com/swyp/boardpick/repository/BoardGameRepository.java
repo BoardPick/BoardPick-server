@@ -21,10 +21,10 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
             "ORDER BY COUNT(ubg) DESC")
     Page<BoardGame> findByPickCountDescForToday(Pageable pageable);
 
-    @Query("SELECT bg FROM BoardGame bg ORDER BY COUNT(bg.difficulty) DESC")
+    @Query("SELECT bg FROM BoardGame bg ORDER BY bg.difficulty DESC")
     Page<BoardGame> findByPickDifficultyDesc(Pageable pageable);
 
-    @Query("SELECT bg FROM BoardGame bg WHERE bg.maxPlayers=2 OR bg.minPlayers=2")
+    @Query("SELECT bg FROM BoardGame bg WHERE bg.maxPlayers=2 AND bg.minPlayers=2")
     Page<BoardGame> findByPick2PlayersDesc(Pageable pageable);
 
     @Query("SELECT bg FROM BoardGame bg ORDER BY COUNT(bg.maxPlayers) DESC")
