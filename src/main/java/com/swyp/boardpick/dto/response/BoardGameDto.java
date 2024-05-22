@@ -1,10 +1,7 @@
 package com.swyp.boardpick.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.swyp.boardpick.domain.BoardGame;
-import com.swyp.boardpick.domain.BoardGameCategory;
-import com.swyp.boardpick.domain.BoardGameTag;
-import com.swyp.boardpick.domain.UserBoardGame;
+import com.swyp.boardpick.domain.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -30,12 +27,12 @@ public class BoardGameDto {
     private int maxPlayers;
     private int playtime;
     private int ageLimit;
-    private double difficulty;
+    private String difficulty;
     private String rule;
     private String extraVideo;
     private int likes;
     private boolean picked;
-    private List<BoardGameCategory> boardGameCategories;
+    private List<String> boardGameCategories;
     private List<UserBoardGame> userBoardGames;
     private List<String> tags;
 
@@ -51,7 +48,7 @@ public class BoardGameDto {
         this.picked = true;
     }
 
-    public BoardGameDto(BoardGame boardGame, List<String> tags, boolean picked) {
+    public BoardGameDto(BoardGame boardGame, String difficulty, List<String> boardGameCategories, List<String> tags, boolean picked) {
         this.id = boardGame.getId();
         this.thumbnailUrl = boardGame.getThumbnailUrl();
         this.imageUrl = boardGame.getImageUrl();
@@ -63,13 +60,14 @@ public class BoardGameDto {
         this.maxPlayers = boardGame.getMaxPlayers();
         this.playtime = boardGame.getPlaytime();
         this.ageLimit = boardGame.getAgeLimit();
-        this.difficulty = boardGame.getDifficulty();
+        this.difficulty = difficulty;
         this.rule = boardGame.getRule();
         this.extraVideo = boardGame.getExtraVideo();
         this.likes = boardGame.getLikes();
-        this.boardGameCategories = boardGame.getBoardGameCategories();
+        this.boardGameCategories = boardGameCategories;
         this.userBoardGames = boardGame.getUserBoardGames();
         this.tags = tags;
         this.picked = picked;
     }
 }
+
