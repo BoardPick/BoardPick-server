@@ -33,17 +33,11 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(Role.USER.getDescription()));
 
-        User user = null;
-        String userCode = null;
-
         if (oauthClientName.equals("kakao")) {
 
-            userCode = "kakao_" + oAuth2User.getAttributes().get("id");
-
-//            if (userRepository.findByCode(userCode).isPresent())
-//                return new CustomOAuth2User(userCode, authorities);
-
-            user = new User(userCode);
+            String userCode = "kakao_" + oAuth2User.getAttributes().get("id");
+            User user = userRepository.findByCode(userCode)
+                    .orElseGet(() -> new User(userCode));
 
             Map<String, Object> attributes = oAuth2User.getAttributes();
 
@@ -70,9 +64,11 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
             user.setNickname(nickname);
             user.setProfileImage(profileImage);
             userRepository.save(user);
+
+            return new CustomOAuth2User(userCode, authorities);
         }
 
-        return new CustomOAuth2User(userCode, authorities);
+        return null;
     }
 
 }
