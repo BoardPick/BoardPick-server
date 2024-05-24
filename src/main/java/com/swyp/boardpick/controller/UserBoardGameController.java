@@ -56,6 +56,6 @@ public class UserBoardGameController {
 
         Long id = userService.getUserId(principal.getName());
         return ResponseEntity
-                .ok(userService.getMyPickList(id));
+                .ok(userBoardGameService.getMyPickList(id));
     }
 }

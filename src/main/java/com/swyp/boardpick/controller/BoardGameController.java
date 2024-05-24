@@ -35,13 +35,13 @@ public class BoardGameController {
     @GetMapping
     @ResponseBody
     public List<BoardGameDto> getBoardgamesByCategory(
-            @RequestParam String category, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+            @RequestParam String category, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "1000") int size) {
         return boardGameService.getBoardGamesByCategory(category, page, size);
     }
 
     @GetMapping("/search")
     public List<BoardGameDto> searchBoardGames(
-            @RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+            @RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "1000") int size) {
         return boardGameService.searchBoardGamesByKeyword(keyword, page, size);
     }
 

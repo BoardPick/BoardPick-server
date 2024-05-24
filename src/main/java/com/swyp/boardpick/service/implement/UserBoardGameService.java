@@ -3,6 +3,7 @@ package com.swyp.boardpick.service.implement;
 import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.domain.UserBoardGame;
+import com.swyp.boardpick.dto.response.BoardGameDto;
 import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.UserBoardGameRepository;
 import com.swyp.boardpick.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +23,8 @@ public class UserBoardGameService {
     private final UserBoardGameRepository userBoardGameRepository;
     private final UserRepository userRepository;
     private final BoardGameRepository boardGameRepository;
+    private final BoardGameService boardGameService;
+
 
     @Transactional
     public boolean togglePick(Long userId, Long boardGameId) {
@@ -52,6 +56,16 @@ public class UserBoardGameService {
             boardGameRepository.save(boardGame);
             return true;
         }
+    }
+
+    public List<BoardGameDto> getMyPickList(Long id) {
+        return userRepository.findById(id)
+                .get().getUserBoardGames()
+                .stream().map(userBoardGame -> {
+                    BoardGame boardGame = userBoardGame.getBoardGame();
+                    return boardGameService.convertToDto(boardGame);
+                })
+                .toList();
     }
 
 }

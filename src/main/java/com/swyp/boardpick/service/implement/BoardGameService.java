@@ -50,31 +50,18 @@ public class BoardGameService {
         return boardGameCategoryRepository.findByCategory_Id(categoryId, PageRequest.of(page, size))
                 .stream().map(boardGameCategory -> {
                     BoardGame boardGame = boardGameCategory.getBoardGame();
-                    List<String> tags = boardGame.getBoardGameTags()
-                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
-                            .toList();
-                    return new BoardGameDto(boardGame, tags);
+                    return convertToDto(boardGame);
                 }).toList();
     }
 
     public List<BoardGameDto> getBoardGamesByNumOfPick(int page, int size) {
         return boardGameRepository.findByPickCountDesc(PageRequest.of(page, size))
-                .map(boardGame -> {
-                    List<String> tags = boardGame.getBoardGameTags()
-                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
-                            .toList();
-                    return new BoardGameDto(boardGame, tags);
-                }).toList();
+                .map(this::convertToDto).toList();
     }
 
     public List<BoardGameDto> getTodayPick() {
         return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0, 10))
-                .map(boardGame -> {
-                    List<String> tags = boardGame.getBoardGameTags()
-                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
-                            .toList();
-                    return new BoardGameDto(boardGame, tags);
-                }).toList();
+                .map(this::convertToDto).toList();
     }
 
     public List<BoardGameDto> getTop10(String filter) {
@@ -84,7 +71,7 @@ public class BoardGameService {
         } else if (filter.equals("players")) {
             boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0, 10));
         }
-        return boardGames.map(boardGame -> convertToDto(boardGame)).stream().toList();
+        return boardGames.map(this::convertToDto).stream().toList();
     }
 
     public List<BoardGameDto> getSimilarBoardGamesById(Long id) {
@@ -102,7 +89,7 @@ public class BoardGameService {
                 .collect(Collectors.toList());
     }
 
-    private BoardGameDto convertToDto(BoardGame boardGame) {
+    public BoardGameDto convertToDto(BoardGame boardGame) {
         String difficulty = convertDifficulty(boardGame.getDifficulty()).getDescription();
 
         List<String> boardGameCategories = boardGame.getBoardGameCategories()
