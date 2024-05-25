@@ -3,12 +3,11 @@ package com.swyp.boardpick.service.implement;
 import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.domain.UserBoardGame;
-import com.swyp.boardpick.dto.response.BoardGameDto;
 import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.UserBoardGameRepository;
 import com.swyp.boardpick.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +22,10 @@ public class UserBoardGameService {
     private final UserBoardGameRepository userBoardGameRepository;
     private final UserRepository userRepository;
     private final BoardGameRepository boardGameRepository;
-    private final BoardGameService boardGameService;
 
 
     @Transactional
-    public boolean togglePick(Long userId, Long boardGameId) {
+    public Boolean togglePick(Long userId, Long boardGameId) {
 
         Optional<BoardGame> optionalBoardGame = boardGameRepository.findById(boardGameId);
         if (optionalBoardGame.isEmpty())
@@ -58,14 +56,16 @@ public class UserBoardGameService {
         }
     }
 
-    public List<BoardGameDto> getMyPickList(Long id) {
+    public List<BoardGame> getMyPickList(Long id) {
         return userRepository.findById(id)
-                .get().getUserBoardGames()
-                .stream().map(userBoardGame -> {
-                    BoardGame boardGame = userBoardGame.getBoardGame();
-                    return boardGameService.convertToDto(boardGame);
-                })
+                .orElseThrow(() -> new EntityNotFoundException("User not found"))
+                .getUserBoardGames()
+                .stream().map(UserBoardGame::getBoardGame)
                 .toList();
+    }
+
+    public boolean getPicked(Long userId, Long boardGameId) {
+        return userBoardGameRepository.existsByUserIdAndBoardGameId(userId, boardGameId);
     }
 
 }

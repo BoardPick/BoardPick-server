@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,105 +19,75 @@ public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final BoardGameCategoryRepository boardGameCategoryRepository;
     private final CategoryRepository categoryRepository;
-    private final UserBoardGameRepository userBoardGameRepository;
-    private final UserService userService;
+    private final UserBoardGameService userBoardGameService;
 
 
-    public Optional<BoardGameDto> getBoardGameById(Long id) {
+    public BoardGame getBoardGameById(Long id) {
         return boardGameRepository.findById(id)
-                .map(this::convertToDto);
+                .orElseThrow(() -> new EntityNotFoundException("BoardGame not found by id"));
     }
 
-    public List<BoardGameDto> searchBoardGamesByKeyword(String keyword, int page, int size) {
-        return boardGameRepository.findByNameContaining(keyword, PageRequest.of(page, size))
-                .stream()
-                .map(this::convertToDto)
-                .toList();
+    public List<BoardGame> searchBoardGamesByKeyword(String keyword, int page, int size) {
+        return boardGameRepository.findByNameContaining(keyword, PageRequest.of(page, size));
     }
 
-    public List<BoardGameDto> recommendBoardGames() {
+    public List<BoardGame> recommendBoardGames() {
         List<BoardGame> allBoardGames = boardGameRepository.findAll();
         Collections.shuffle(allBoardGames);
-        return allBoardGames.stream()
-                .limit(10)
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return allBoardGames.subList(0, Math.min(allBoardGames.size(), 10));
     }
 
-    public List<BoardGameDto> getBoardGamesByCategory(String category, int page, int size) {
+    public List<BoardGame> getBoardGamesByCategory(String category, int page, int size) {
         Long categoryId = categoryRepository.findByType(category).getId();
         return boardGameCategoryRepository.findByCategory_Id(categoryId, PageRequest.of(page, size))
-                .stream().map(boardGameCategory -> {
-                    BoardGame boardGame = boardGameCategory.getBoardGame();
-                    return convertToDto(boardGame);
-                }).toList();
+                .stream().map(BoardGameCategory::getBoardGame).toList();
     }
 
-    public List<BoardGameDto> getBoardGamesByNumOfPick(int page, int size) {
-        return boardGameRepository.findByPickCountDesc(PageRequest.of(page, size))
-                .map(this::convertToDto).toList();
+    public List<BoardGame> getBoardGamesByNumOfPick(int page, int size) {
+        return boardGameRepository.findByPickCountDesc(PageRequest.of(page, size)).getContent();
     }
 
-    public List<BoardGameDto> getTodayPick() {
-        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0, 10))
-                .map(this::convertToDto).toList();
+    public List<BoardGame> getTodayPick() {
+        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0, 10)).getContent();
     }
 
-    public List<BoardGameDto> getTop10(String filter) {
+    public List<BoardGame> getTop10(String filter) {
         Page<BoardGame> boardGames = boardGameRepository.findByPick2PlayersDesc(PageRequest.of(0, 10));
         if (filter.equals("difficulty")) {
             boardGames = boardGameRepository.findByPickDifficultyDesc(PageRequest.of(0, 10));
         } else if (filter.equals("players")) {
             boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0, 10));
         }
-        return boardGames.map(this::convertToDto).stream().toList();
+        return boardGames.getContent();
     }
 
-    public List<BoardGameDto> getSimilarBoardGamesById(Long id) {
+    public List<BoardGame> getSimilarBoardGamesById(Long id) {
+        // 책임1 : 보드게임의 존재를 확인하고, 없다면 예외처리. 이 코드는 무조건 모듈화하는게 좋음
         BoardGame boardGame = boardGameRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("BoardGame not found"));
 
         List<Category> categories = boardGame.getBoardGameCategories()
                 .stream()
                 .map(BoardGameCategory::getCategory)
-                .collect(Collectors.toList());
-
-        return boardGameRepository.findSimilarByCategories(categories, id)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    public BoardGameDto convertToDto(BoardGame boardGame) {
-        String difficulty = convertDifficulty(boardGame.getDifficulty()).getDescription();
-
-        List<String> boardGameCategories = boardGame.getBoardGameCategories()
-                .stream().map(boardGameCategory -> boardGameCategory.getCategory().getType())
                 .toList();
 
-        List<String> tags =
-                boardGame.getBoardGameTags()
-                        .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
-                        .toList();
-
-        Long userId = userService.getCurrentOAuth2UserId();
-
-        Long boardGameId = boardGame.getId();
-
-        boolean picked = userBoardGameRepository.existsByUserIdAndBoardGameId(userId, boardGameId);
-
-        return new BoardGameDto(boardGame, difficulty, boardGameCategories, tags, picked);
+        return boardGameRepository.findSimilarByCategories(categories, id);
     }
 
-    private Difficulty convertDifficulty(double difficulty) {
-        if (difficulty < 1.8)
-            return Difficulty.VERY_EASY;
-        if (difficulty < 2.6)
-            return Difficulty.EASY;
-        if (difficulty < 3.4)
-            return Difficulty.NORMAL;
-        if (difficulty < 4.2)
-            return Difficulty.HARD;
-        return Difficulty.VERY_HARD;
+    public List<BoardGameDto> convertToDtoList(List<BoardGame> boardGames, Long userId) {
+        return boardGames
+                .stream()
+                .map(boardGame -> {
+                    boolean picked = userBoardGameService.getPicked(userId, boardGame.getId());
+                    return new BoardGameDto(boardGame, picked);
+                }).toList();
+    }
+
+    public List<BoardGameDto> convertToDotListForAnonymous(List<BoardGame> boardGames) {
+        return boardGames
+                .stream()
+                .map(boardGame -> {
+                    return new BoardGameDto(boardGame, false);
+                }).toList();
     }
 }

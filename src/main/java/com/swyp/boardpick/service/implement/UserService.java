@@ -33,18 +33,6 @@ public class UserService {
         return user.getId();
     }
 
-    public Long getCurrentOAuth2UserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
-
-            OAuth2User oauthUser = oauthToken.getPrincipal();
-            return getUserId(oauthUser.getName());
-        }
-
-        return null;
-    }
-
     public UserDto getMyInfo(Long id) {
         User user =  userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

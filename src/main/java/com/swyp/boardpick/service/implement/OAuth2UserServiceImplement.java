@@ -5,8 +5,11 @@ import com.swyp.boardpick.domain.Role;
 import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -66,6 +69,19 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
             userRepository.save(user);
 
             return new CustomOAuth2User(userCode, authorities);
+        }
+
+        return null;
+    }
+
+    public OAuth2AuthenticationToken getOAuth2Token() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
+
+//            OAuth2User oauthUser = oauthToken.getPrincipal();
+//            return getUserId(oauthUser.getName());
+            return oauthToken;
         }
 
         return null;
