@@ -1,6 +1,7 @@
 package com.swyp.boardpick.handler;
 
 import com.swyp.boardpick.domain.CustomOAuth2User;
+import com.swyp.boardpick.domain.Uri;
 import com.swyp.boardpick.provider.JwtProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +19,6 @@ import java.io.IOException;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtProvider jwtProvider;
-    @Value("${frontend.url}")
-    private String frontBaseUrl;
 
     @Override
     public void onAuthenticationSuccess(
@@ -33,9 +32,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String code = oAuth2User.getName();
         String token = jwtProvider.create(code);
 
-//        response.sendRedirect(frontBaseUrl + "/auth/oauth-success?token=" + token);
+        response.sendRedirect(Uri.MAIN_PAGE.getDescription() + "/auth/oauth-success?token=" + token);
 //        response.sendRedirect(frontBaseUrl);
-        response.sendRedirect("http://localhost:3000" + "/auth/oauth-success?token=" + token);
+//        response.sendRedirect("http://localhost:3000" + "/auth/oauth-success?token=" + token);
 //        response.sendRedirect("http://localhost:8080/" + token);
     }
 }

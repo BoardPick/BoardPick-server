@@ -6,7 +6,6 @@ import com.swyp.boardpick.domain.UserBoardGame;
 import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.UserBoardGameRepository;
 import com.swyp.boardpick.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,10 +55,9 @@ public class UserBoardGameService {
         }
     }
 
-    public List<BoardGame> getMyPickList(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"))
-                .getUserBoardGames()
+    public List<BoardGame> getMyPickList(Long userId) {
+        return userBoardGameRepository
+                .findByUserIdOrderByDateDesc(userId)
                 .stream().map(UserBoardGame::getBoardGame)
                 .toList();
     }
