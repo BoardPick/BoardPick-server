@@ -1,14 +1,21 @@
 package com.swyp.boardpick.repository;
 
 import com.swyp.boardpick.domain.BoardGame;
+import com.swyp.boardpick.domain.BoardGameCategory;
+import com.swyp.boardpick.domain.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
+    Optional<BoardGame> findById(Long id);
 
     List<BoardGame> findByNameContaining(String keyword, Pageable pageable);
 
@@ -29,4 +36,10 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     @Query("SELECT bg FROM BoardGame bg ORDER BY bg.maxPlayers DESC")
     Page<BoardGame> findByPickPlayersDesc(Pageable pageable);
+
+    @Query("SELECT bg FROM BoardGame bg JOIN bg.boardGameCategories bgc JOIN bgc.category c WHERE c IN :categories AND bg.id <> :boardGameId GROUP BY bg ORDER BY COUNT(c) DESC")
+    List<BoardGame> findSimilarByCategories(@Param("categories") List<Category> categories, @Param("boardGameId") Long boardGameId);
+
+    @Query(value = "SELECT * FROM board_game ORDER BY RANDOM() LIMIT 10", nativeQuery = true)
+    List<BoardGame> findRandomBoardGames();
 }

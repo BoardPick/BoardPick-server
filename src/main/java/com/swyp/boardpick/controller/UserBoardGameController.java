@@ -1,9 +1,11 @@
 package com.swyp.boardpick.controller;
 
+import com.swyp.boardpick.domain.BoardGame;
 import com.swyp.boardpick.domain.CustomOAuth2User;
 import com.swyp.boardpick.domain.User;
 import com.swyp.boardpick.dto.response.BoardGameDto;
 import com.swyp.boardpick.repository.UserRepository;
+import com.swyp.boardpick.service.implement.BoardGameService;
 import com.swyp.boardpick.service.implement.UserBoardGameService;
 import com.swyp.boardpick.service.implement.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,23 +28,22 @@ public class UserBoardGameController {
     private final UserBoardGameService userBoardGameService;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final BoardGameService boardGameService;
 
     @PostMapping("/{boardGameId}")
     public ResponseEntity<?> togglePick(@PathVariable("boardGameId") Long boardGameId, Authentication principal) {
         if (principal == null) {
 //            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
 //            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+            System.out.println("principal is null");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
         }
-        String userCode = principal.getName();
-        User user = userRepository.findByCode(userCode)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with code: " + userCode));
-        Long userId = user.getId();
 
-        boolean isPicked = userBoardGameService.togglePick(userId, boardGameId);
+        Long userId = userService.getUserId(principal.getName());
 
-        return ResponseEntity.ok().body(Map.of("picked", isPicked));
+        boolean picked = userBoardGameService.togglePick(userId, boardGameId);
+
+        return ResponseEntity.ok().body(Map.of("picked", picked));
     }
 
     @GetMapping
@@ -51,11 +52,15 @@ public class UserBoardGameController {
         if (principal == null) {
 //            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
 //            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.noContent().build();
         }
 
-        Long id = userService.getUserId(principal.getName());
-        return ResponseEntity
-                .ok(userService.getMyPickList(id));
+        Long userId = userService.getUserId(principal.getName());
+        List<BoardGame> boardGames = userBoardGameService.getMyPickList(userId);
+
+        if (boardGames.isEmpty())
+            return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(boardGameService.convertToDtoList(boardGames, userId));
     }
 }

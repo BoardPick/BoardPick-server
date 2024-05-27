@@ -7,11 +7,12 @@ import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.UserBoardGameRepository;
 import com.swyp.boardpick.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,8 +23,9 @@ public class UserBoardGameService {
     private final UserRepository userRepository;
     private final BoardGameRepository boardGameRepository;
 
+
     @Transactional
-    public boolean togglePick(Long userId, Long boardGameId) {
+    public Boolean togglePick(Long userId, Long boardGameId) {
 
         Optional<BoardGame> optionalBoardGame = boardGameRepository.findById(boardGameId);
         if (optionalBoardGame.isEmpty())
@@ -35,6 +37,7 @@ public class UserBoardGameService {
             userBoardGameRepository.deleteByUserIdAndBoardGameId(userId, boardGameId);
             boardGame.decreaseLikes();
             boardGameRepository.save(boardGame);
+            evictRecommendationCache(userId);
             return false;
         }
         // 좋아요
@@ -50,8 +53,25 @@ public class UserBoardGameService {
             userBoardGameRepository.save(userBoardGame);
             boardGame.increaseLikes();
             boardGameRepository.save(boardGame);
+            evictRecommendationCache(userId);
             return true;
         }
+    }
+
+    @CacheEvict(value = "recommendation", key = "#userId")
+    private void evictRecommendationCache(Long userId) {
+        // This method will evict the cache for the given user ID
+    }
+
+    public List<BoardGame> getMyPickList(Long userId) {
+        return userBoardGameRepository
+                .findByUserIdOrderByDateDesc(userId)
+                .stream().map(UserBoardGame::getBoardGame)
+                .toList();
+    }
+
+    public boolean getPicked(Long userId, Long boardGameId) {
+        return userBoardGameRepository.existsByUserIdAndBoardGameId(userId, boardGameId);
     }
 
 }

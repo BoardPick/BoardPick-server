@@ -33,31 +33,6 @@ public class UserService {
         return user.getId();
     }
 
-    public Long getCurrentOAuth2UserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
-
-            OAuth2User oauthUser = oauthToken.getPrincipal();
-            return getUserId(oauthUser.getName());
-        }
-
-        return null;
-    }
-
-    public List<BoardGameDto> getMyPickList(Long id) {
-        return userRepository.findById(id)
-                .get().getUserBoardGames()
-                .stream().map(userBoardGame -> {
-                    BoardGame boardGame = userBoardGame.getBoardGame();
-                    List<String> tags = boardGame.getBoardGameTags()
-                            .stream().map(boardGameTag -> boardGameTag.getTag().getContent())
-                            .toList();
-                    return new BoardGameDto(userBoardGame.getBoardGame(), tags);
-                })
-                .toList();
-    }
-
     public UserDto getMyInfo(Long id) {
         User user =  userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

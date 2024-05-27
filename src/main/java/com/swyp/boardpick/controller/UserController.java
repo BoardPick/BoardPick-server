@@ -27,7 +27,7 @@ public class UserController {
         if (principal == null) {
 //            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
 //            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.noContent().build();
         }
 
         Long userId = userService.getUserId(principal.getName());
