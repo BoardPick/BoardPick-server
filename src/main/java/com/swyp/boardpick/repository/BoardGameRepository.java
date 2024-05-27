@@ -11,9 +11,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
+    Optional<BoardGame> findById(Long id);
 
     List<BoardGame> findByNameContaining(String keyword, Pageable pageable);
 
@@ -38,4 +40,6 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("SELECT bg FROM BoardGame bg JOIN bg.boardGameCategories bgc JOIN bgc.category c WHERE c IN :categories AND bg.id <> :boardGameId GROUP BY bg ORDER BY COUNT(c) DESC")
     List<BoardGame> findSimilarByCategories(@Param("categories") List<Category> categories, @Param("boardGameId") Long boardGameId);
 
+    @Query(value = "SELECT * FROM board_game ORDER BY RANDOM() LIMIT 10", nativeQuery = true)
+    List<BoardGame> findRandomBoardGames();
 }
