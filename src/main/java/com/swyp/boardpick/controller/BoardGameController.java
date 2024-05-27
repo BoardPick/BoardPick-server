@@ -39,17 +39,34 @@ public class BoardGameController {
     @GetMapping("/recs")
     public ResponseEntity<List<BoardGameDto>> getRecommendations(Authentication principal) {
 
-        List<BoardGame> recommendedBoardGames = boardGameService.recommendBoardGames();
-
-        if (recommendedBoardGames.isEmpty())
-            return ResponseEntity.noContent().build();
-
         if (principal == null) {
-            return ResponseEntity.ok(boardGameService.convertToDotListForAnonymous(recommendedBoardGames));
+            return ResponseEntity.ok(
+                    boardGameService.convertToDotListForAnonymous(
+                            boardGameService.getRandomBoardGames()
+                    ));
         }
+
         Long userId = userService.getUserId(principal.getName());
+        List<BoardGame> recommendedBoardGames = boardGameService.getRecommendationBoardGamesByUser(userId);
+
+        if (recommendedBoardGames.size() < 10) {
+
+            List<BoardGame> randomBoardGames = boardGameService.getRandomBoardGames();
+            randomBoardGames.removeAll(recommendedBoardGames);
+
+            int remainingSlots = 10 - recommendedBoardGames.size();
+            recommendedBoardGames.addAll(randomBoardGames.stream().limit(remainingSlots).toList());
+        }
 
         return ResponseEntity.ok(boardGameService.convertToDtoList(recommendedBoardGames, userId));
+    }
+
+    @GetMapping("/suggestion")
+    public ResponseEntity<List<BoardGameDto>> getSuggestionBoardGames() {
+        return ResponseEntity.ok(
+                boardGameService.convertToDotListForAnonymous(
+                boardGameService.getPopularBoardGames()
+        ));
     }
 
     @GetMapping

@@ -5,13 +5,14 @@ import com.swyp.boardpick.dto.response.BoardGameDto;
 import com.swyp.boardpick.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class BoardGameService {
     private final BoardGameCategoryRepository boardGameCategoryRepository;
     private final CategoryRepository categoryRepository;
     private final UserBoardGameService userBoardGameService;
+    private final UserBoardGameRepository userBoardGameRepository;
 
 
     public BoardGame getBoardGameById(Long id) {
@@ -31,10 +33,60 @@ public class BoardGameService {
         return boardGameRepository.findByNameContaining(keyword, PageRequest.of(page, size));
     }
 
-    public List<BoardGame> recommendBoardGames() {
+    public List<BoardGame> getRandomBoardGames() {
+        return boardGameRepository.findRandomBoardGames();
+    }
+
+    public List<BoardGame> getPopularBoardGames() {
+        List<BoardGame> popularBoardGames = userBoardGameRepository.findUserBoardGamesOrderByBoardGameIdCount()
+                .stream().map(UserBoardGame::getBoardGame)
+                .collect(Collectors.toList());
+
+        Set<BoardGame> set = new LinkedHashSet<>(popularBoardGames);
+        popularBoardGames.clear();
+        popularBoardGames.addAll(set);
+
+        return popularBoardGames;
+    }
+
+    @Cacheable("recommendation")
+    public List<BoardGame> getRecommendationBoardGamesByUser(Long userId) {
+
+        List<BoardGame> pickedGames =
+                userBoardGameRepository.findByUserIdOrderByDateDesc(userId)
+                .stream().map(UserBoardGame::getBoardGame)
+                .toList();
+
+        List<BoardGame> recentlyPickedGames = pickedGames.stream().limit(10).toList();
+
         List<BoardGame> allBoardGames = boardGameRepository.findAll();
-        Collections.shuffle(allBoardGames);
-        return allBoardGames.subList(0, Math.min(allBoardGames.size(), 10));
+        allBoardGames.removeAll(pickedGames);
+
+        Map<Category, Long> scores = new HashMap<>();
+
+        recentlyPickedGames.forEach(boardGame -> {
+            boardGame.getBoardGameCategories()
+                    .stream()
+                    .map(BoardGameCategory::getCategory)
+                    .forEach(category -> scores.merge(category, 1L, Long::sum));
+        });
+
+        List<BoardGame> recommendedBoardGames = allBoardGames.parallelStream()
+                .sorted((bg1, bg2) -> {
+                    long score1 = bg1.getBoardGameCategories().stream()
+                            .map(BoardGameCategory::getCategory)
+                            .mapToLong(category -> scores.getOrDefault(category, 0L))
+                            .sum();
+                    long score2 = bg2.getBoardGameCategories().stream()
+                            .map(BoardGameCategory::getCategory)
+                            .mapToLong(category -> scores.getOrDefault(category, 0L))
+                            .sum();
+                    return Long.compare(score2, score1); // 점수가 높은 순으로 정렬
+                })
+                .limit(10)
+                .collect(Collectors.toList());
+
+        return  recommendedBoardGames;
     }
 
     public List<BoardGame> getBoardGamesByCategory(String category, int page, int size) {
