@@ -7,6 +7,7 @@ import com.swyp.boardpick.repository.BoardGameRepository;
 import com.swyp.boardpick.repository.UserBoardGameRepository;
 import com.swyp.boardpick.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ public class UserBoardGameService {
             userBoardGameRepository.deleteByUserIdAndBoardGameId(userId, boardGameId);
             boardGame.decreaseLikes();
             boardGameRepository.save(boardGame);
+            evictRecommendationCache(userId);
             return false;
         }
         // 좋아요
@@ -51,8 +53,14 @@ public class UserBoardGameService {
             userBoardGameRepository.save(userBoardGame);
             boardGame.increaseLikes();
             boardGameRepository.save(boardGame);
+            evictRecommendationCache(userId);
             return true;
         }
+    }
+
+    @CacheEvict(value = "recommendation", key = "#userId")
+    private void evictRecommendationCache(Long userId) {
+        // This method will evict the cache for the given user ID
     }
 
     public List<BoardGame> getMyPickList(Long userId) {
