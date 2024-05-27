@@ -28,7 +28,7 @@ public class BoardGameEntityListener {
     }
 
     private String getUrlKey(String url) {
-        String pattern = "(?<=youtu.be/|v=)[^&#?]*";
+        String pattern = "(?<=youtu.be/|v=|live/|embed/|shorts/)[^&#?/]+";
 
         Pattern compiledPattern = Pattern.compile(pattern);
         Matcher matcher = compiledPattern.matcher(url);
