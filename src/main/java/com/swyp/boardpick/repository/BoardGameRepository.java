@@ -1,7 +1,6 @@
 package com.swyp.boardpick.repository;
 
 import com.swyp.boardpick.domain.BoardGame;
-import com.swyp.boardpick.domain.BoardGameCategory;
 import com.swyp.boardpick.domain.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
