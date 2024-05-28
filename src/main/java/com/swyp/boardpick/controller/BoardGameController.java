@@ -41,32 +41,40 @@ public class BoardGameController {
 
         if (principal == null) {
             return ResponseEntity.ok(
-                    boardGameService.convertToDotListForAnonymous(
-                            boardGameService.getRandomBoardGames()
+                    boardGameService.convertToDtoListForAnonymous(
+                            boardGameService.getRandomBoardGames(10)
                     ));
         }
 
         Long userId = userService.getUserId(principal.getName());
-        List<BoardGame> recommendedBoardGames = boardGameService.getRecommendationBoardGamesByUser(userId);
 
-        if (recommendedBoardGames.size() < 10) {
+        List<BoardGame> recommendationBoardGames =
+                boardGameService.fillRandomBoardGames(
+                boardGameService.getRecommendationBoardGamesByUser(userId)
+                        , 10);
 
-            List<BoardGame> randomBoardGames = boardGameService.getRandomBoardGames();
-            randomBoardGames.removeAll(recommendedBoardGames);
-
-            int remainingSlots = 10 - recommendedBoardGames.size();
-            recommendedBoardGames.addAll(randomBoardGames.stream().limit(remainingSlots).toList());
-        }
-
-        return ResponseEntity.ok(boardGameService.convertToDtoList(recommendedBoardGames, userId));
+        return ResponseEntity.ok(boardGameService.convertToDtoList(recommendationBoardGames, userId));
     }
 
     @GetMapping("/suggestion")
-    public ResponseEntity<List<BoardGameDto>> getSuggestionBoardGames() {
+    public ResponseEntity<List<BoardGameDto>> getSuggestionBoardGames(Authentication principal) {
+
+        if (principal == null) {
+            return ResponseEntity.ok(
+                    boardGameService.convertToDtoListForAnonymous(
+                            boardGameService.getPopularBoardGames()
+                                    .stream().limit(10).toList()
+                    )
+            );
+        }
+
+        Long userId = userService.getUserId(principal.getName());
         return ResponseEntity.ok(
-                boardGameService.convertToDotListForAnonymous(
-                boardGameService.getPopularBoardGames()
-        ));
+                boardGameService.convertToDtoList(
+                        boardGameService.fillRandomBoardGames(
+                                boardGameService.getSuggestionBoardGames(userId), 10)
+                        , userId)
+        );
     }
 
     @GetMapping
@@ -80,7 +88,7 @@ public class BoardGameController {
             return ResponseEntity.noContent().build();
 
         if (principal == null) {
-            return ResponseEntity.ok(boardGameService.convertToDotListForAnonymous(boardGames));
+            return ResponseEntity.ok(boardGameService.convertToDtoListForAnonymous(boardGames));
         }
 
         Long userId = userService.getUserId(principal.getName());
@@ -98,7 +106,7 @@ public class BoardGameController {
             return ResponseEntity.noContent().build();
 
         if (principal == null) {
-            return ResponseEntity.ok(boardGameService.convertToDotListForAnonymous(boardGames));
+            return ResponseEntity.ok(boardGameService.convertToDtoListForAnonymous(boardGames));
         }
 
         Long userId = userService.getUserId(principal.getName());
@@ -115,7 +123,7 @@ public class BoardGameController {
             return ResponseEntity.noContent().build();
 
         if (principal == null) {
-            return ResponseEntity.ok(boardGameService.convertToDotListForAnonymous(boardGames));
+            return ResponseEntity.ok(boardGameService.convertToDtoListForAnonymous(boardGames));
         }
 
         Long userId = userService.getUserId(principal.getName());
@@ -132,7 +140,7 @@ public class BoardGameController {
             return ResponseEntity.noContent().build();
 
         if (principal == null) {
-            return ResponseEntity.ok(boardGameService.convertToDotListForAnonymous(boardGames));
+            return ResponseEntity.ok(boardGameService.convertToDtoListForAnonymous(boardGames));
         }
 
         Long userId = userService.getUserId(principal.getName());
@@ -149,7 +157,7 @@ public class BoardGameController {
             return ResponseEntity.noContent().build();
 
         if (principal == null) {
-            return ResponseEntity.ok(boardGameService.convertToDotListForAnonymous(boardGames));
+            return ResponseEntity.ok(boardGameService.convertToDtoListForAnonymous(boardGames));
         }
 
         Long userId = userService.getUserId(principal.getName());
