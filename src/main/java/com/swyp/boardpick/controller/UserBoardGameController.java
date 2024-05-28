@@ -35,7 +35,6 @@ public class UserBoardGameController {
         if (principal == null) {
 //            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
 //            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
-            System.out.println("principal is null");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
