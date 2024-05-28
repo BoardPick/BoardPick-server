@@ -102,8 +102,5 @@ class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.getWriter().write("{\"code\": \"NP\", \"message\": \"No Permission.\"}");
-        System.out.println(authException.getMessage());
-        System.out.println(authException);
-        System.out.println(authException.getCause());
     }
 }

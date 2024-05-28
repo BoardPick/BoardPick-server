@@ -40,6 +40,10 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("SELECT bg FROM BoardGame bg JOIN bg.boardGameCategories bgc JOIN bgc.category c WHERE c IN :categories AND bg.id <> :boardGameId GROUP BY bg ORDER BY COUNT(c) DESC")
     List<BoardGame> findSimilarByCategories(@Param("categories") List<Category> categories, @Param("boardGameId") Long boardGameId);
 
-    @Query(value = "SELECT * FROM board_game ORDER BY RANDOM() LIMIT 10", nativeQuery = true)
-    List<BoardGame> findRandomBoardGames();
+    @Query(value = "SELECT * FROM board_game ORDER BY RAND()", nativeQuery = true)
+    List<BoardGame> findRandomBoardGames(Pageable pageable);
+
+    @Query("SELECT bg FROM BoardGame bg WHERE bg.id NOT IN :excludeIds ORDER BY RAND()")
+    List<BoardGame> findRandomBoardGamesExcluding(@Param("excludeIds") List<Long> excludeIds, Pageable pageable);
+
 }
