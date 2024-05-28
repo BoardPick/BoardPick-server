@@ -19,6 +19,9 @@ public class BoardGameEntityListener {
     }
 
     public String formattingYoutubeUrl(String url) {
+        if (url == null || url.isEmpty())
+            return "";
+
         String embedPrefix = "https://www.youtube.com/embed/";
         if (url.startsWith(embedPrefix))
             return url;
