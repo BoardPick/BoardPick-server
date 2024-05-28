@@ -73,6 +73,29 @@ public class BoardGameService {
         return popularBoardGames;
     }
 
+    public List<BoardGame> getSimilarBoardGamesById(Long id) {
+        // 책임1 : 보드게임의 존재를 확인하고, 없다면 예외처리. 이 코드는 무조건 모듈화하는게 좋음
+        BoardGame boardGame = boardGameRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("BoardGame not found"));
+
+        List<BoardGame> allBoardGames = boardGameRepository.findAll()
+                .stream()
+                .filter(bg -> !bg.equals(boardGame))
+                .toList();
+
+        List<BoardGame> boardGames = Collections.singletonList(boardGame);
+
+        Map<Category, Long> categoryScorecard = getCategoryScorecard(boardGames);
+        Map<Tag, Long> tagScorecard = getTagScorecard(boardGames);
+
+        List<BoardGame> similarBoardGames =
+                scoringBoardGames(allBoardGames, categoryScorecard, tagScorecard)
+                .stream().limit(10)
+                .toList();
+
+        return similarBoardGames;
+    }
+
     @Cacheable("recommendation")
     public List<BoardGame> getRecommendationBoardGamesByUser(Long userId) {
 
@@ -81,40 +104,77 @@ public class BoardGameService {
         List<BoardGame> allBoardGames = boardGameRepository.findAll();
         allBoardGames.removeAll(pickedGames);
 
-        Map<Category, Long> scorecard = new HashMap<>();
+        List<BoardGame> recentlyPickedGames = pickedGames.stream().limit(20).toList();
 
-        List<BoardGame> recentlyPickedGames = pickedGames.stream().limit(10).toList();
-        writeScorecard(scorecard, recentlyPickedGames);
+        Map<Category, Long> categoryScorecard = getCategoryScorecard(recentlyPickedGames);
+        Map<Tag, Long> tagScorecard = getTagScorecard(recentlyPickedGames);
 
-        List<BoardGame> recommendedBoardGames = scoringBoardGames(allBoardGames, scorecard)
+        List<BoardGame> recommendedBoardGames =
+                scoringBoardGames(allBoardGames, categoryScorecard, tagScorecard)
                 .stream().limit(10)
                 .toList();
 
         return recommendedBoardGames;
     }
 
-    private void writeScorecard(Map<Category, Long> scorecard, List<BoardGame> boardGames) {
+    private Map<Category, Long> getCategoryScorecard(List<BoardGame> boardGames) {
+        Map<Category, Long> scorecard = new HashMap<>();
+
         boardGames.forEach(boardGame -> {
             boardGame.getBoardGameCategories()
                     .stream()
                     .map(BoardGameCategory::getCategory)
                     .forEach(category -> scorecard.merge(category, 1L, Long::sum));
         });
+
+        return scorecard;
     }
 
-    private List<BoardGame> scoringBoardGames(List<BoardGame> boardGames, Map<Category, Long> scorecard) {
+    private Map<Tag, Long> getTagScorecard(List<BoardGame> boardGames) {
+        Map<Tag, Long> scorecard = new HashMap<>();
+
+        boardGames.forEach(boardGame -> {
+            boardGame.getBoardGameTags()
+                    .stream()
+                    .map(BoardGameTag::getTag)
+                    .forEach(tag -> scorecard.merge(tag, 1L, Long::sum));
+        });
+
+        return scorecard;
+    }
+
+    private List<BoardGame> scoringBoardGames(List<BoardGame> boardGames, Map<Category, Long> categoryScorecard, Map<Tag, Long> tagScorecard) {
+        Map<BoardGame, Long> boardGameScores = boardGames.stream()
+                .collect(Collectors.toMap(
+                        boardGame -> boardGame,
+                        boardGame -> calculateScore(boardGame, categoryScorecard, tagScorecard)
+                ));
+
         return boardGames.parallelStream()
-                .sorted((bg1, bg2) -> {
-                    long score1 = bg1.getBoardGameCategories().stream()
-                            .map(BoardGameCategory::getCategory)
-                            .mapToLong(category -> scorecard.getOrDefault(category, 0L))
-                            .sum();
-                    long score2 = bg2.getBoardGameCategories().stream()
-                            .map(BoardGameCategory::getCategory)
-                            .mapToLong(category -> scorecard.getOrDefault(category, 0L))
-                            .sum();
-                    return Long.compare(score2, score1); // 점수가 높은 순으로 정렬
-                }).toList();
+                .sorted((bg1, bg2) -> Long.compare(boardGameScores.get(bg2), boardGameScores.get(bg1)))
+                .toList();
+    }
+
+    private Long calculateScore(BoardGame boardGame, Map<Category, Long> categoryScorecard, Map<Tag, Long> tagScorecard) {
+        Long score = 0L;
+
+        List<Category> categories =
+                boardGame.getBoardGameCategories()
+                        .stream().map(BoardGameCategory::getCategory)
+                        .toList();
+
+        List<Tag> tags =
+                boardGame.getBoardGameTags()
+                        .stream().map(BoardGameTag::getTag)
+                        .toList();
+
+        for (Category category : categories)
+            score += categoryScorecard.getOrDefault(category, 0L);
+
+        for (Tag tag : tags)
+            score += tagScorecard.getOrDefault(tag, 0L);
+
+        return score;
     }
 
     public List<BoardGame> getUserBoardGames(Long userId) {
@@ -145,19 +205,6 @@ public class BoardGameService {
             boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0, 10));
         }
         return boardGames.getContent();
-    }
-
-    public List<BoardGame> getSimilarBoardGamesById(Long id) {
-        // 책임1 : 보드게임의 존재를 확인하고, 없다면 예외처리. 이 코드는 무조건 모듈화하는게 좋음
-        BoardGame boardGame = boardGameRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("BoardGame not found"));
-
-        List<Category> categories = boardGame.getBoardGameCategories()
-                .stream()
-                .map(BoardGameCategory::getCategory)
-                .toList();
-
-        return boardGameRepository.findSimilarByCategories(categories, id);
     }
 
     public List<BoardGameDto> convertToDtoList(List<BoardGame> boardGames, Long userId) {
