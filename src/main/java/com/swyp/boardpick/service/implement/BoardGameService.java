@@ -117,6 +117,53 @@ public class BoardGameService {
         return recommendedBoardGames;
     }
 
+    public List<BoardGame> getUserBoardGames(Long userId) {
+        return userBoardGameRepository.findByUserIdOrderByDateDesc(userId)
+                .stream().map(UserBoardGame::getBoardGame)
+                .toList();
+    }
+
+    public List<BoardGame> getBoardGamesByCategory(String category, int page, int size) {
+        Long categoryId = categoryRepository.findByType(category).getId();
+        return boardGameCategoryRepository.findByCategory_Id(categoryId, PageRequest.of(page, size))
+                .stream().map(BoardGameCategory::getBoardGame).toList();
+    }
+
+    public List<BoardGame> getBoardGamesByNumOfPick(int page, int size) {
+        return boardGameRepository.findByPickCountDesc(PageRequest.of(page, size)).getContent();
+    }
+
+    public List<BoardGame> getTodayPick() {
+        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0, 10)).getContent();
+    }
+
+    public List<BoardGame> getTop10(String filter) {
+        Page<BoardGame> boardGames = boardGameRepository.findByPick2PlayersDesc(PageRequest.of(0, 10));
+        if (filter.equals("difficulty")) {
+            boardGames = boardGameRepository.findByPickDifficultyDesc(PageRequest.of(0, 10));
+        } else if (filter.equals("players")) {
+            boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0, 10));
+        }
+        return boardGames.getContent();
+    }
+
+    public List<BoardGameDto> convertToDtoList(List<BoardGame> boardGames, Long userId) {
+        return boardGames
+                .stream()
+                .map(boardGame -> {
+                    boolean picked = userBoardGameService.getPicked(userId, boardGame.getId());
+                    return new BoardGameDto(boardGame, picked);
+                }).toList();
+    }
+
+    public List<BoardGameDto> convertToDtoListForAnonymous(List<BoardGame> boardGames) {
+        return boardGames
+                .stream()
+                .map(boardGame -> {
+                    return new BoardGameDto(boardGame, false);
+                }).toList();
+    }
+
     private Map<Category, Long> getCategoryScorecard(List<BoardGame> boardGames) {
         Map<Category, Long> scorecard = new HashMap<>();
 
@@ -175,52 +222,5 @@ public class BoardGameService {
             score += tagScorecard.getOrDefault(tag, 0L);
 
         return score;
-    }
-
-    public List<BoardGame> getUserBoardGames(Long userId) {
-        return userBoardGameRepository.findByUserIdOrderByDateDesc(userId)
-                .stream().map(UserBoardGame::getBoardGame)
-                .toList();
-    }
-
-    public List<BoardGame> getBoardGamesByCategory(String category, int page, int size) {
-        Long categoryId = categoryRepository.findByType(category).getId();
-        return boardGameCategoryRepository.findByCategory_Id(categoryId, PageRequest.of(page, size))
-                .stream().map(BoardGameCategory::getBoardGame).toList();
-    }
-
-    public List<BoardGame> getBoardGamesByNumOfPick(int page, int size) {
-        return boardGameRepository.findByPickCountDesc(PageRequest.of(page, size)).getContent();
-    }
-
-    public List<BoardGame> getTodayPick() {
-        return boardGameRepository.findByPickCountDescForToday(PageRequest.of(0, 10)).getContent();
-    }
-
-    public List<BoardGame> getTop10(String filter) {
-        Page<BoardGame> boardGames = boardGameRepository.findByPick2PlayersDesc(PageRequest.of(0, 10));
-        if (filter.equals("difficulty")) {
-            boardGames = boardGameRepository.findByPickDifficultyDesc(PageRequest.of(0, 10));
-        } else if (filter.equals("players")) {
-            boardGames = boardGameRepository.findByPickPlayersDesc(PageRequest.of(0, 10));
-        }
-        return boardGames.getContent();
-    }
-
-    public List<BoardGameDto> convertToDtoList(List<BoardGame> boardGames, Long userId) {
-        return boardGames
-                .stream()
-                .map(boardGame -> {
-                    boolean picked = userBoardGameService.getPicked(userId, boardGame.getId());
-                    return new BoardGameDto(boardGame, picked);
-                }).toList();
-    }
-
-    public List<BoardGameDto> convertToDtoListForAnonymous(List<BoardGame> boardGames) {
-        return boardGames
-                .stream()
-                .map(boardGame -> {
-                    return new BoardGameDto(boardGame, false);
-                }).toList();
     }
 }

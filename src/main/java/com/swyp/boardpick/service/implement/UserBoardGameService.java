@@ -74,4 +74,10 @@ public class UserBoardGameService {
         return userBoardGameRepository.existsByUserIdAndBoardGameId(userId, boardGameId);
     }
 
+    public List<Long> getMyPickIds(Long userId) {
+        return getMyPickList(userId)
+                .stream().map(BoardGame::getId)
+                .toList();
+    }
+
 }
