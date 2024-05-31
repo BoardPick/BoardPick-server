@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature-getPickedIds
 
 env:
   IMAGE_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/boardpick-server:latest
