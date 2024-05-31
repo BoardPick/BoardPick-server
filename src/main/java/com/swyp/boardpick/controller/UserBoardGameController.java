@@ -67,4 +67,15 @@ public class UserBoardGameController {
 
         return ResponseEntity.ok().body(Map.of("picked", picked));
     }
+
+    @GetMapping("/get-ids")
+    public ResponseEntity<List<Long>> getPickedIds(Authentication principal) {
+        if (principal == null)
+            return ResponseEntity.noContent().build();
+
+        Long userId = userService.getUserId(principal.getName());
+        List<Long> ids = userBoardGameService.getMyPickIds(userId);
+
+        return ResponseEntity.ok(ids);
+    }
 }
