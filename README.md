@@ -1,24 +1,19 @@
 # BoardPick-server
-
-## 소개
 보드픽은 다양한 보드게임 안에서 내가 좋아하는 보드게임을 찾고, 
 
 관련 후기들을 한 눈에 볼 수 있는 
 보드게임 정보 및 후기 제공 서비스입니다.
 
-### 시연 영상
+## 접속 방법
+**프론트 서버 주소**
+https://boardpick.netlify.app
 
+**API 문서**
+https://velog.io/@tjdtna01/API-%EC%84%A4%EA%B3%84
+
+## 시연 영상
 https://github.com/user-attachments/assets/3b086e8f-0beb-4d5b-be28-2f8221392a3d
 
-
-## 접속 방법
-### 프론트 서버 주소
-```
-https://boardpick.netlify.app
-```
-
-### API 문서
-https://velog.io/@tjdtna01/API-%EC%84%A4%EA%B3%84
 
 ## System Architecture
 <img width="1682" alt="image" src="https://github.com/user-attachments/assets/2cc5e05c-d219-4788-b03b-90d580dfc799">
