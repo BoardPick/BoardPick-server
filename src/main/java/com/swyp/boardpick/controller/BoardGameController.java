@@ -78,7 +78,6 @@ public class BoardGameController {
     }
 
     @GetMapping
-    @ResponseBody
     public ResponseEntity<List<BoardGameDto>> getBoardgamesByCategory(Authentication principal,
             @RequestParam String category, @RequestParam(defaultValue = "0") @Min(0) int page, @RequestParam(defaultValue = "1000") @Min(1) int size) {
 

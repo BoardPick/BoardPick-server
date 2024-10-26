@@ -10,6 +10,9 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@Table(name = "user_board_game", indexes = {
+        @Index(name = "idx_board_game_id", columnList = "board_game_id")
+})
 public class UserBoardGame {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

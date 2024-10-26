@@ -27,8 +27,6 @@ public class UserBoardGameController {
     @PostMapping("/{boardGameId}")
     public ResponseEntity<?> togglePick(@PathVariable("boardGameId") Long boardGameId, Authentication principal) {
         if (principal == null) {
-//            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
-//            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -40,11 +38,8 @@ public class UserBoardGameController {
     }
 
     @GetMapping
-    @ResponseBody
     public ResponseEntity<List<BoardGameDto>> getMyPickList(Authentication principal) {
         if (principal == null) {
-//            URI uri = URI.create(Uri.LOGIN_PAGE.getDescription());
-//            return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
             return ResponseEntity.noContent().build();
         }
 
